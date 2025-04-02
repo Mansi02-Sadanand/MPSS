@@ -1,21 +1,25 @@
 "use client";
-import { useState } from "react";
-
-const vendors = [
-    { name: "AutoTech Supplies", part: "Brakes", email: "contact@autotech.com", phone: "9876543210", address: "Mumbai, India" },
-    { name: "Speedy Motors", part: "Engine", email: "info@speedymotors.com", phone: "8765432109", address: "Delhi, India" },
-    { name: "GearUp Auto", part: "Transmission", email: "support@gearupauto.com", phone: "7654321098", address: "Pune, India" },
-    { name: "Turbo Parts", part: "Turbocharger", email: "sales@turboparts.com", phone: "6543210987", address: "Chennai, India" },
-    { name: "WheelWorks", part: "Wheels", email: "contact@wheelworks.com", phone: "9988776655", address: "Bangalore, India" },
-    { name: "PowerRide", part: "Batteries", email: "service@powerride.com", phone: "9123456780", address: "Hyderabad, India" },
-    { name: "DriveLine Auto", part: "Steering", email: "info@drivelineauto.com", phone: "9812345678", address: "Kolkata, India" },
-    { name: "EcoFuel Systems", part: "Fuel Injectors", email: "support@ecofuel.com", phone: "9432109876", address: "Lucknow, India" }
-];
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function VendorManagement() {
+    const [vendors, setVendors] = useState([]);
     const [filter, setFilter] = useState("");
 
-    const filteredVendors = vendors.filter(vendor =>
+    useEffect(() => {
+        const fetchVendors = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/api/vendors");
+                setVendors(response.data); // Assuming response.data is an array of vendors
+            } catch (error) {
+                console.error("Error fetching vendors:", error);
+            }
+        };
+
+        fetchVendors();
+    }, []);
+
+    const filteredVendors = vendors.filter((vendor: any) =>
         vendor.part.toLowerCase().includes(filter.toLowerCase())
     );
 
@@ -42,16 +46,17 @@ export default function VendorManagement() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredVendors.map((vendor, index) => (
+                            {filteredVendors.map((vendor: { name?: string; part?: string; email?: string; phone?: string; address?: string }, index: number) => (
                                 <tr key={index} className="border-b hover:bg-gray-700">
-                                    <td className="p-4">{vendor.name}</td>
-                                    <td className="p-4">{vendor.part}</td>
-                                    <td className="p-4">{vendor.email}</td>
-                                    <td className="p-4">{vendor.phone}</td>
-                                    <td className="p-4">{vendor.address}</td>
+                                    <td className="p-4">{vendor.name ?? "N/A"}</td>
+                                    <td className="p-4">{vendor.part ?? "N/A"}</td>
+                                    <td className="p-4">{vendor.email ?? "N/A"}</td>
+                                    <td className="p-4">{vendor.phone ?? "N/A"}</td>
+                                    <td className="p-4">{vendor.address ?? "N/A"}</td>
                                 </tr>
                             ))}
                         </tbody>
+
                     </table>
                 </div>
             </div>
