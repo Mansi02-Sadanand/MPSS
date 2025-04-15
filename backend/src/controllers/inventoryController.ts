@@ -4,7 +4,7 @@ import Inventory from "../models/inventory";
 export const getInventory = async (req: Request, res: Response) => {
   try {
     const parts = await Inventory.find();
-    console.log("Fetched inventory parts:", parts);
+    // console.log("Fetched inventory parts:", parts);
     res.status(200).json(parts);
   } catch (error) {
     console.error("Failed to fetch inventory:", error);

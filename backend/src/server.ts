@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import vendorRoutes from "./routes/vendorRoutes";
+import salesRoute from "./routes/salesRoute"
 import inventoryRoutes from "./routes/inventoryRoutes";
 
 dotenv.config();
@@ -34,9 +35,6 @@ const connectDB = async () => {
 
 connectDB();
 
-// Routes
-app.use("/api/vendors", vendorRoutes);
-app.use("/api/inventory", inventoryRoutes);
 
 // Global Error Handling Middleware
 app.use(
@@ -50,6 +48,11 @@ app.use(
     res.status(500).json({ message: "Internal Server Error" });
   }
 );
+
+// Routes
+app.use("/api/vendors", vendorRoutes);
+app.use("/api/inventory", inventoryRoutes);
+app.use("/api/sales",salesRoute)
 
 // Start Server
 app.listen(PORT, () =>
