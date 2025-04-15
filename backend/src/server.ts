@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import vendorRoutes from "./routes/vendorRoutes";
+import inventoryRoutes from "./routes/inventoryRoutes";
 
 dotenv.config();
 
@@ -16,28 +17,41 @@ app.use(express.json());
 
 // Connect to MongoDB
 const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI as string, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        } as any); // Required for TS compatibility
-        console.log(" MongoDB connected successfully");
-    } catch (err) {
-        console.error(" MongoDB Connection Error:", err);
-        process.exit(1); // Exit process if DB connection fails
-    }
+  try {
+    await mongoose.connect(
+      process.env.MONGO_URI as string,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      } as any
+    ); // Required for TS compatibility
+    console.log(" MongoDB connected successfully");
+  } catch (err) {
+    console.error(" MongoDB Connection Error:", err);
+    process.exit(1); // Exit process if DB connection fails
+  }
 };
 
 connectDB();
 
 // Routes
 app.use("/api/vendors", vendorRoutes);
+app.use("/api/inventory", inventoryRoutes);
 
 // Global Error Handling Middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use(
+  (
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
     console.error("Unhandled Server Error:", err);
     res.status(500).json({ message: "Internal Server Error" });
-});
+  }
+);
 
 // Start Server
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);

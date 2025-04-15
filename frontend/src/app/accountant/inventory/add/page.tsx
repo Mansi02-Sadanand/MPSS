@@ -1,40 +1,64 @@
 "use client";
 
 import { useState } from "react";
-import initialParts from "../../../../../inventorySample/inventory.json";
 
 export default function AddMotorPart() {
-  const [parts, setParts] = useState(initialParts);
-  const [newPart, setNewPart] = useState({ name: "", quantity: "", price: "" });
+  const [newPart, setNewPart] = useState({
+    name: "",
+    quantity: "",
+    price: "",
+    rack_position: "",
+    vendor_email: "",
+  });
   const [message, setMessage] = useState("");
 
-  const handleChange = (e:any) => {
+  const handleChange = (e: any) => {
     setNewPart({ ...newPart, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const newId = parts.length ? parts[parts.length - 1].id + 1 : 1;
-    const partToAdd = {
-      id: newId,
-      name: newPart.name,
-      quantity: parseInt(newPart.quantity, 10),
-      price: parseFloat(newPart.price),
-    };
 
-    // Update the parts array (this is only in memory)
-    setParts([...parts, partToAdd]);
-    setMessage("Motor part added successfully!");
-    setNewPart({ name: "", quantity: "", price: "" });
+    // Make sure all required fields are filled
+    if (!newPart.name || !newPart.quantity || !newPart.price || !newPart.rack_position || !newPart.vendor_email) {
+      setMessage("Please fill in all fields.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/inventory", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: newPart.name,
+          quantity: parseInt(newPart.quantity, 10),
+          price: parseFloat(newPart.price),
+          rack_position: newPart.rack_position,
+          vendor_email: newPart.vendor_email,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage("Motor part added successfully!");
+      } else {
+        setMessage(data.message || "Failed to add motor part.");
+      }
+    } catch (error) {
+      setMessage("Error adding motor part.");
+    }
+
+    // Reset the form
+    setNewPart({ name: "", quantity: "", price: "", rack_position: "", vendor_email: "" });
   };
-//   console.log(parts);
-  
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg ">
       <h2 className="text-2xl font-bold text-blue-700 mb-4">Add Motor Part</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div >
+        <div>
           <label className="block text-gray-700">Name:</label>
           <input
             type="text"
@@ -45,6 +69,7 @@ export default function AddMotorPart() {
             className="w-full px-3 py-2 border rounded-md text-gray-800"
           />
         </div>
+
         <div>
           <label className="block text-gray-700">Quantity:</label>
           <input
@@ -56,6 +81,7 @@ export default function AddMotorPart() {
             className="w-full px-3 py-2 border rounded-md text-gray-800"
           />
         </div>
+
         <div>
           <label className="block text-gray-700">Price:</label>
           <input
@@ -68,6 +94,31 @@ export default function AddMotorPart() {
             className="w-full px-3 py-2 border rounded-md text-gray-800"
           />
         </div>
+
+        <div>
+          <label className="block text-gray-700">Rack Position:</label>
+          <input
+            type="text"
+            name="rack_position"
+            value={newPart.rack_position}
+            onChange={handleChange}
+            required
+            className="w-full px-3 py-2 border rounded-md text-gray-800"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700">Vendor Email:</label>
+          <input
+            type="email"
+            name="vendor_email"
+            value={newPart.vendor_email}
+            onChange={handleChange}
+            required
+            className="w-full px-3 py-2 border rounded-md text-gray-800"
+          />
+        </div>
+
         <button
           type="submit"
           className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition"
@@ -75,9 +126,8 @@ export default function AddMotorPart() {
           Add Part
         </button>
       </form>
-      {message && (
-        <p className="mt-4 text-center text-green-600">{message}</p>
-      )}
+
+      {message && <p className="mt-4 text-center text-green-600">{message}</p>}
     </div>
   );
 }

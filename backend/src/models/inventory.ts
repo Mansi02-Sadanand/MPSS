@@ -2,14 +2,15 @@ import mongoose from "mongoose";
 
 const inventorySchema = new mongoose.Schema(
   {
-    part_id: { type: Number, required: true, unique: true },
-    name: { type: String, required: true },
-    quantity: { type: Number, required: true },
-    price: { type: Number, required: true },
-    rack_position: { type: String, required: true },
-    vendor_email: { type: String, required: true },
+    part_id: Number,
+    name: String,
+    quantity: Number,
+    price: Number,
+    rack_position: String,
+    vendor_email: String,
   },
-  { timestamps: true }
+  { collection: "inventory" } //
 );
 
-export default mongoose.model("Inventory", inventorySchema);
+const Inventory = mongoose.model("Inventory", inventorySchema);
+export default Inventory;
