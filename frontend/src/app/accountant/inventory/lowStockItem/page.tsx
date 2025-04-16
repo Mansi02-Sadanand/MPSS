@@ -17,6 +17,7 @@ export default function ShowLowStockItems() {
     const [lowStockItems, setLowStockItems] = useState<LowStockItem[]>([]);
     const [filter, setFilter] = useState("");
     const [loading, setLoading] = useState(true);
+    const [reorderedItems, setReorderedItems] = useState<number[]>([]);
 
     useEffect(() => {
         const fetchLowStockItems = async () => {
@@ -37,6 +38,7 @@ export default function ShowLowStockItems() {
         try {
             await axios.post("http://localhost:5000/api/inventory/reorder-email", { part_id });
             alert(`Reorder email sent for part ID ${part_id}`);
+            setReorderedItems(prev => [...prev, part_id]);
         } catch (error) {
             console.error("Failed to send reorder email:", error);
             alert("Failed to send reorder email.");
@@ -68,16 +70,19 @@ export default function ShowLowStockItems() {
                     <table className="min-w-full border rounded-lg">
                         <thead>
                             <tr className="bg-blue-600 text-white">
+                                
                                 <th className="p-4 text-left">Part ID</th>
                                 <th className="p-4 text-left">Name</th>
                                 <th className="p-4 text-left">Quantity</th>
                                 <th className="p-4 text-left">Vendor Email</th>
-                                <th className="p-4 text-left">Actions</th> {/* Column for buttons */}
+                                <th className="p-4 text-left">Actions</th>
+                            
                             </tr>
                         </thead>
                         <tbody>
                             {filteredLowStockItems.map((item) => (
                                 <tr key={item._id} className="border-b hover:bg-gray-700">
+                                    
                                     <td className="p-4">{item.part_id}</td>
                                     <td className="p-4">{item.name}</td>
                                     <td className="p-4">{item.quantity}</td>
@@ -85,11 +90,19 @@ export default function ShowLowStockItems() {
                                     <td className="p-4">
                                         <button
                                             onClick={() => handleReorder(item.part_id)}
-                                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg"
+                                            disabled={reorderedItems.includes(item.part_id)}
+                                            className={`${
+                                                reorderedItems.includes(item.part_id)
+                                                  ? "bg-green-800 cursor-not-allowed"
+                                                  : "bg-red-600 hover:bg-red-700"
+                                              } text-white px-3 py-1 rounded-lg`}
                                         >
-                                            Reorder
+                                            {
+                                                reorderedItems.includes(item.part_id)? "Ordered":"Reorder"
+                                            }
                                         </button>
                                     </td>
+
                                 </tr>
                             ))}
                         </tbody>
