@@ -20,6 +20,11 @@ export default function InventoryManagement() {
             🔍 Retrieve Motor Parts
           </a>
         </Link>
+        <Link legacyBehavior href="/accountant/inventory/lowStockItem">
+          <a className="block px-4 py-2 bg-blue-100 rounded-md text-blue-700 hover:bg-blue-200 transition">
+            Low Stock Motor Parts
+          </a>
+        </Link>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import nodemailer from "nodemailer";
 import Inventory from "../models/inventory";
 
 export const getInventory = async (req: Request, res: Response) => {
@@ -76,5 +77,16 @@ export const addInventoryPart = async (
   } catch (error) {
     console.error("Error adding part:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getLowStockItems = async (req: Request, res: Response) => {
+  try {
+    const lowStockItems = await Inventory.find({ quantity: { $lt: 16 } });
+
+    res.status(200).json(lowStockItems);
+  } catch (error) {
+    console.error("Error fetching low stock items:", error);
+    res.status(500).json({ error: "Server error while fetching items." });
   }
 };
