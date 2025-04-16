@@ -12,20 +12,22 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Pull from env, fallback to localhost in dev
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+
 // CORS: Allow only frontend access
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(express.json());
 
 // Connect to MongoDB
 const connectDB = async () => {
+  const uri =  process.env.MONGO_URI
+  if (!uri) {
+    console.error("❌ MONGO_URI is not defined");
+    process.exit(1);
+  }
   try {
-    await mongoose.connect(
-      process.env.MONGO_URI as string,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      } as any
-    ); // Required for TS compatibility
+    await mongoose.connect(uri); // Required for TS compatibility
     console.log(" MongoDB connected successfully");
   } catch (err) {
     console.error(" MongoDB Connection Error:", err);

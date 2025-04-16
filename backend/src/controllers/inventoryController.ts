@@ -46,7 +46,7 @@ export const reorderMail = async (req: Request, res: Response):Promise<void> => 
         </ul>
       `,
     };
-    console.log(mailOptions);
+    // console.log(mailOptions);
     
     // Send the email
     const info = await transporter.sendMail(mailOptions);
